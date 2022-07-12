@@ -13,7 +13,7 @@ pipeline {
                         checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Bhargava-G/Bhargava_Assignment.git']]])
                         }
                     }
-               }
+               
                     // Building Docker images
                     stage('Building image') {
                               steps{
