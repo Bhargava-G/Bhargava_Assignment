@@ -3,7 +3,7 @@
 pipeline {
     agent any
     environment {
-    AWS_ACCOUNT_ID="Y750158212676"
+    AWS_ACCOUNT_ID="750158212676"
         AWS_DEFAULT_REGION="us-east-1" 
         IMAGE_REPO_NAME="bhargava"
         IMAGE_TAG="Latest"
@@ -36,7 +36,7 @@ pipeline {
                     stage('Building image') {
                               steps{
                                 script {
-                                  dockerImage = docker.build "${Ibhargava}:${Latest}"
+                                  dockerImage = docker.build "${bhargava}:${Latest}"
                                 }
                               }
                          }
@@ -45,8 +45,8 @@ pipeline {
     stage('Pushing to ECR') {
         steps{
             script {
-                sh 'docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 750158212676.dkr.ecr.us-east-1.amazonaws.com/bhargava'
-                sh 'docker push 750158212676.dkr.ecr.us-east-1.amazonaws.com/bhargava'
+                sh "docker tag ${bhargava}:${Latest} ${750158212676}.dkr.ecr.${us-east-1}.amazonaws.com/${bhargava}:$Latest"
+                sh "docker push ${750158212676}.dkr.ecr.${us-east-1}.amazonaws.com/${bhargava}:${Latest}"
             }
         }
     }
