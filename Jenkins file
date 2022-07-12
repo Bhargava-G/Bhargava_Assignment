@@ -7,24 +7,23 @@ pipeline {
     }
     
     stages {
-        stage('Cloning Git') {
+            stage('Cloning Git') {
             
-            steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Bhargava-G/Bhargava_Assignment.git']]])
-            }
-            
-         }
-        }
-    // Building Docker images
-    stage('Building image') {
-      steps{
-        script {
-          def dockerHome = tool 'docker'
-          env.PATH = "${dockerHome}/bin:${env.PATH}"
-          dockerImage = docker.build registry
-        }
-      }
-    }
+                    steps {
+                        checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Bhargava-G/Bhargava_Assignment.git']]])
+                        }
+                    }
+               }
+                    // Building Docker images
+                    stage('Building image') {
+                              steps{
+                                script {
+                                  def dockerHome = tool 'docker'
+                                  env.PATH = "${dockerHome}/bin:${env.PATH}"
+                                  dockerImage = docker.build registry
+                                }
+                              }
+                         }
 
     // Uploading Docker images into AWS ECR
     stage('Pushing to ECR') {
@@ -46,4 +45,3 @@ pipeline {
            }
       }
     }
-}
