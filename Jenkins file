@@ -3,14 +3,32 @@
 pipeline {
     agent any
     environment {
-        registry = "750158212676.dkr.ecr.us-east-1.amazonaws.com/bhargava"
+    AWS_ACCOUNT_ID="Y750158212676"
+        AWS_DEFAULT_REGION="us-east-1" 
+        IMAGE_REPO_NAME="bhargava"
+        IMAGE_TAG="Latest"
+        REPOSITORY_URI = "${750158212676}.dkr.ecr.${us-east-1}.amazonaws.com/${bhargava}"
+        
     }
     
     stages {
+            stage('Logging into AWS ECR') {
+            steps {
+                script {
+                sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 750158212676.dkr.ecr.us-east-1.amazonaws.com"
+                }
+                 
+            }
+
+
+        }
+            
+           
             stage('Cloning Git') {
             
                     steps {
-                        checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Bhargava-G/Bhargava_Assignment.git']]])
+                        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/Bhargava-G/Bhargava_Assignment.git']]])
+                        
                         }
                     }
                
@@ -18,9 +36,7 @@ pipeline {
                     stage('Building image') {
                               steps{
                                 script {
-                                  def dockerHome = tool 'docker'
-                                  env.PATH = "${dockerHome}/bin:${env.PATH}"
-                                  dockerImage = docker.build registry
+                                  dockerImage = docker.build "${Ibhargava}:${Latest}"
                                 }
                               }
                          }
@@ -38,7 +54,7 @@ pipeline {
     stage('Docker Deploy') {
      steps{
          script {
-             sshagent(credentials : ['node_app']){
+             sshagent(credentials : ['bhargava']){
                 sh 'ssh -o StrictHostKeyChecking=no ubuntu@10.0.2.61 "docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 750158212676.dkr.ecr.us-east-1.amazonaws.com/bhargava && docker pull 750158212676.dkr.ecr.us-east-1.amazonaws.com/bhargava:latest && (docker ps -f name=node -q | xargs --no-run-if-empty docker container stop) && (docker container ls -a -fname=node -q | xargs -r docker container rm) && docker run -d -p 8080:8080 --rm --name node 750158212676.dkr.ecr.us-east-1.amazonaws.com/bhargava"'
 
              }
