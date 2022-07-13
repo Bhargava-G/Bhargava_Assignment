@@ -18,8 +18,7 @@ pipeline {
                     stage('Building image') {
                               steps{
                                 script {
-                                  def dockerHome = tool 'docker'
-                                  env.PATH = "${dockerHome}/bin:${env.PATH}"
+                                
                                   dockerImage = docker.build registry
                                 }
                               }
@@ -29,8 +28,8 @@ pipeline {
     stage('Pushing to ECR') {
         steps{
             script {
-                sh 'docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 750158212676.dkr.ecr.us-east-1.amazonaws.com/bhargava'
-                sh 'docker push 750158212676.dkr.ecr.us-east-1.amazonaws.com/bhargava'
+                sh 'sudo docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 750158212676.dkr.ecr.us-east-1.amazonaws.com/bhargava'
+                sh 'sudo docker push 750158212676.dkr.ecr.us-east-1.amazonaws.com/bhargava'
             }
         }
     }
